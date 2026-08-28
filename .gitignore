@@ -1,0 +1,17 @@
+target/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+### Uploads / local files ###
+uploads/
+
+### OS ###
+.DS_Store
+
+### Env ###
+.env
