@@ -42,6 +42,18 @@ app:
   uploads:
     dir: ${UPLOADS_DIR:uploads}
     public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
+  telegram:
+    # Bot token from @BotFather and the chat (group) id that receives CRM alerts.
+    # Leave empty to turn notifications off.
+    bot-token: ${TELEGRAM_BOT_TOKEN:}
+    chat-id: ${TELEGRAM_CHAT_ID:}
+  crm:
+    # Links in Telegram messages point here, e.g. https://grandcity.kg/admin/crm
+    admin-url: ${CRM_ADMIN_URL:http://localhost:3000/admin/crm}
+    # Dates in Telegram messages are shown in this zone.
+    timezone: ${CRM_TIMEZONE:Asia/Bishkek}
+    # Send a task reminder this many minutes before it is due.
+    remind-before-minutes: ${CRM_REMIND_BEFORE_MINUTES:15}
   admin:
     # used only to (re)seed the default admin on first startup, see V2__seed_data.sql
     default-username: ${ADMIN_USERNAME:admin}

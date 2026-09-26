@@ -1,9 +1,11 @@
 package com.grandcity.backend.service;
 
 import com.grandcity.backend.common.exception.NotFoundException;
+import com.grandcity.backend.crm.CrmService;
 import com.grandcity.backend.dto.RequestDto;
 import com.grandcity.backend.entity.ContactRequest;
 import com.grandcity.backend.mapper.RequestMapper;
+import com.grandcity.backend.repository.PropertyRepository;
 import com.grandcity.backend.repository.RequestRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,24 +20,44 @@ public class RequestService {
 
     private final RequestRepository repository;
     private final RequestMapper mapper;
+    private final CrmService crm;
+    private final PropertyRepository properties;
 
-    public RequestService(RequestRepository repository, RequestMapper mapper) {
+    public RequestService(RequestRepository repository, RequestMapper mapper, CrmService crm,
+                          PropertyRepository properties) {
         this.repository = repository;
         this.mapper = mapper;
+        this.crm = crm;
+        this.properties = properties;
     }
 
     @Transactional
     public RequestDto create(RequestDto dto) {
-        ContactRequest entity = ContactRequest.builder()
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .phone(dto.getPhone())
-                .kind(dto.getKind() != null && !dto.getKind().isBlank() ? dto.getKind() : "general")
-                .message(dto.getMessage())
+        String kind = dto.getKind() != null && !dto.getKind().isBlank() ? dto.getKind() : "general";
+        String propertyId = dto.getPropertyId() != null && properties.existsById(dto.getPropertyId())
+                ? dto.getPropertyId() : null;
+        return mapper.toDto(createLead(dto.getName(), dto.getEmail(), dto.getPhone(), kind,
+                dto.getMessage(), propertyId, dto.getAgentId()));
+    }
+
+    /** Save an enquiry and hand it to the CRM for routing, assignment and notification. */
+    @Transactional
+    public ContactRequest createLead(String name, String email, String phone, String kind,
+                                     String message, String propertyId, String preferredAgentId) {
+        OffsetDateTime now = OffsetDateTime.now();
+        ContactRequest entity = repository.save(ContactRequest.builder()
+                .name(name)
+                .email(email)
+                .phone(phone)
+                .kind(kind)
+                .message(message)
+                .propertyId(propertyId)
                 .status("new")
-                .createdAt(OffsetDateTime.now())
-                .build();
-        return mapper.toDto(repository.save(entity));
+                .createdAt(now)
+                .updatedAt(now)
+                .build());
+        crm.onNewLead(entity, preferredAgentId);
+        return entity;
     }
 
     @Transactional(readOnly = true)
@@ -51,6 +73,7 @@ public class RequestService {
         ContactRequest entity = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Request not found: " + id));
         entity.setStatus(status);
+        entity.setUpdatedAt(OffsetDateTime.now());
         return mapper.toDto(repository.save(entity));
     }
 

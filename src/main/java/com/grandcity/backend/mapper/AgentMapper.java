@@ -26,6 +26,7 @@ public class AgentMapper {
         dto.setSalesCount(a.getSalesCount());
         dto.setRating(a.getRating());
         dto.setSince(a.getSince());
+        dto.setDepartment(a.getDepartment());
         return dto;
     }
 
@@ -42,5 +43,6 @@ public class AgentMapper {
         entity.setSalesCount(dto.getSalesCount() != null ? dto.getSalesCount() : 0);
         entity.setRating(dto.getRating() != null ? dto.getRating() : BigDecimal.ZERO);
         entity.setSince(dto.getSince());
+        entity.setDepartment(dto.getDepartment() != null && !dto.getDepartment().isBlank() ? dto.getDepartment() : null);
     }
 }

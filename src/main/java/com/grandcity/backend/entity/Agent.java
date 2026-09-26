@@ -68,4 +68,8 @@ public class Agent {
 
     @Column(name = "since", nullable = false)
     private Integer since;
+
+    /** valuation | planning | sales — used to route CRM leads. */
+    @Column(name = "department", length = 20)
+    private String department;
 }
