@@ -26,7 +26,7 @@ public class RequestDto {
     @Pattern(regexp = "^[+()\\d\\s-]*$", message = "Enter a valid phone number")
     private String phone;
 
-    @Pattern(regexp = "general|viewing|valuation|letting", message = "Invalid kind")
+    @Pattern(regexp = "general|viewing|valuation|business-plan|sales|letting", message = "Invalid kind")
     private String kind = "general";
 
     @NotBlank
@@ -34,6 +34,14 @@ public class RequestDto {
     private String message;
 
     private String status;
+
+    /** Optional: the employee the client wrote to — they get the lead. */
+    @Size(max = 64)
+    private String agentId;
+
+    /** Optional: the property the enquiry is about. */
+    @Size(max = 64)
+    private String propertyId;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private OffsetDateTime createdAt;

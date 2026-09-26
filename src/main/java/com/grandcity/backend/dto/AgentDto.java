@@ -44,4 +44,7 @@ public class AgentDto {
 
     @NotNull
     private Integer since;
+
+    @Pattern(regexp = "valuation|planning|sales", message = "Invalid department")
+    private String department;
 }

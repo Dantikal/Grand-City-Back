@@ -8,6 +8,6 @@ import lombok.Data;
 public class RequestStatusUpdateDto {
 
     @NotBlank
-    @Pattern(regexp = "new|in-progress|closed", message = "Invalid status")
+    @Pattern(regexp = CrmStages.PATTERN, message = "Invalid status")
     private String status;
 }
